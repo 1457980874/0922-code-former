@@ -8,11 +8,27 @@ import (
 type MainController struct {
 	beego.Controller
 }
+type RegisterController struct {
+	beego.Controller
+}
 
 func (c *MainController) Get() {
 	c.Data["Website"] = "beego.me"
 	c.Data["Email"] = "astaxie@gmail.com"
 	c.TplName = "index.tpl"
+}
+func (c *RegisterController) Post(){
+	fmt.Println("already go run")
+	name:=c.Ctx.Request.PostFormValue("name")
+	birthday:=c.Ctx.Request.PostFormValue("birthday")
+	address:=c.Ctx.Request.PostFormValue("address")
+	nick:=c.Ctx.Request.PostFormValue("nick")
+	fmt.Println(name,birthday,address,nick)
+	if name !="chen" {
+		c.Ctx.WriteString("数据解析失败")
+		return
+	}
+	c.Ctx.WriteString("数据解析成功")
 }
 /*
 *post方法
