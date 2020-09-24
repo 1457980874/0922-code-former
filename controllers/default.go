@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/astaxie/beego"
 )
 
@@ -13,3 +14,38 @@ func (c *MainController) Get() {
 	c.Data["Email"] = "astaxie@gmail.com"
 	c.TplName = "index.tpl"
 }
+/*
+*post方法
+*/
+func (c *MainController) Post(){
+	fmt.Println("hello world")
+	name := c.Ctx.Request.PostFormValue("Name")
+	age := c.Ctx.Request.PostFormValue("Age")
+	sex := c.Ctx.Request.PostFormValue("Sex")
+	fmt.Println(name,age,sex)
+	if name!="chen" && age!="20" && sex!="man" {
+		c.Ctx.WriteString("数据校验失败")
+		return
+	}
+	c.Ctx.WriteString("数据校验成功")
+}
+
+
+//func (c *MainController)Post()  {
+//	var person models.Person
+//	database,err:=ioutil.ReadAll(c.Ctx.Request.Body)
+//	if err != nil {
+//		c.Ctx.WriteString("数据接受错误")
+//		return
+//	}
+//	err =json.Unmarshal(database,&person)
+//	if err != nil {
+//		c.Ctx.WriteString("数据解析错误")
+//		return
+//	}
+//	fmt.Println("姓名：",person.Name)
+//	fmt.Println("年龄：",person.Age)
+//	fmt.Println("性别：",person.Sex)
+//	c.Ctx.WriteString("数据解析成功")
+//}
+
