@@ -1,8 +1,12 @@
 package controllers
 
 import (
+	"0922/db_mysql"
+	"0922/models"
+	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
+	"io/ioutil"
 )
 
 type MainController struct {
@@ -17,25 +21,41 @@ func (c *MainController) Get() {
 	c.Data["Email"] = "astaxie@gmail.com"
 	c.TplName = "index.tpl"
 }
-func (c *RegisterController) Post(){
+func (r *RegisterController) Post(){
 	fmt.Println("already go run")
-	name:=c.Ctx.Request.PostFormValue("name")
-	birthday:=c.Ctx.Request.PostFormValue("birthday")
-	address:=c.Ctx.Request.PostFormValue("address")
-	nick:=c.Ctx.Request.PostFormValue("nick")
-	fmt.Println(name,birthday,address,nick)
-	if name !="chen" {
-		c.Ctx.WriteString("数据解析失败")
+	bodyBytes,err:=ioutil.ReadAll(r.Ctx.Request.Body)
+	if err != nil {
+		r.Ctx.WriteString("数据接收错误")
 		return
 	}
-	c.Ctx.WriteString("数据解析成功")
+	var user models.User
+	err =json.Unmarshal(bodyBytes,&user)
+	if err != nil {
+		fmt.Println(err.Error())
+		r.Ctx.WriteString("数据解析错误")
+		return
+	}
+	id,err:=db_mysql.InsertUser(user)
+	if err != nil {
+		fmt.Println(err.Error())
+		r.Ctx.WriteString("用户保存失败")
+		return
+	}
+	fmt.Println(id)
+	result :=models.ResponseResult{
+		Code: 0,
+		Message: "保存成功",
+		Data: nil,
+	}
+	r.Data["json"]=&result
+	r.ServeJSON()
 }
 /*
 *post方法
 */
 func (c *MainController) Post(){
 	fmt.Println("hello world")
-	name := c.Ctx.Request.PostFormValue("Name")
+	name := c.Ctx.Request.FormValue("Name")
 	age := c.Ctx.Request.PostFormValue("Age")
 	sex := c.Ctx.Request.PostFormValue("Sex")
 	fmt.Println(name,age,sex)
